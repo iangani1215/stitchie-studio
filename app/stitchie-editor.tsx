@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { GIFEncoder, applyPalette, quantize } from "gifenc";
 
 type Pt = { x: number; y: number };
 type Stitch = { a: Pt; b: Pt; color: string; group: number };
@@ -33,17 +34,20 @@ function spaceMotifPoints(points:Pt[],spacing:number){if(points.length<2)return 
 
 function threadLine(ctx: CanvasRenderingContext2D, a: Pt, b: Pt, color: string, alpha=1) {
   ctx.save(); ctx.globalAlpha = alpha; ctx.lineCap = "round";
-  ctx.shadowColor = "rgba(34,23,19,.42)"; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2.2;
-  ctx.strokeStyle = color; ctx.lineWidth = 8.5; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  ctx.shadowColor = "rgba(24,15,12,.5)"; ctx.shadowBlur = 5.5; ctx.shadowOffsetX=1.3;ctx.shadowOffsetY = 3;
+  ctx.strokeStyle = "rgba(32,17,14,.46)";ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  ctx.shadowColor = "rgba(34,23,19,.42)"; ctx.shadowBlur = 3; ctx.shadowOffsetX=.7;ctx.shadowOffsetY = 1.8;
+  ctx.strokeStyle = color; ctx.lineWidth = 9.2; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
   ctx.shadowColor = "transparent";
-  [ -3, -2, -1, 0, 1, 2, 3 ].forEach((o,i) => {
+  [ -3.5,-2.7,-1.8,-.9,0,.9,1.8,2.7,3.5 ].forEach((o,i) => {
     const dx=b.x-a.x, dy=b.y-a.y, l=Math.hypot(dx,dy)||1, ox=-dy/l*o, oy=dx/l*o;
-    ctx.strokeStyle = i===3 ? "rgba(255,255,255,.38)" : i%2 ? "rgba(50,20,17,.24)" : "rgba(255,240,230,.18)";
-    ctx.lineWidth = i===3 ? 1 : .7; ctx.beginPath(); ctx.moveTo(a.x+ox,a.y+oy); ctx.lineTo(b.x+ox,b.y+oy); ctx.stroke();
-  }); ctx.restore();
+    ctx.strokeStyle = i===4 ? "rgba(255,255,255,.48)" : i%2 ? "rgba(43,17,14,.3)" : "rgba(255,238,226,.22)";
+    ctx.lineWidth = i===4 ? 1.15 : .62; ctx.beginPath(); ctx.moveTo(a.x+ox,a.y+oy); ctx.lineTo(b.x+ox,b.y+oy); ctx.stroke();
+  });
+  const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1,px=-dy/length,py=dx/length;[-1,1].forEach((side,index)=>{ctx.strokeStyle=index?"rgba(255,245,235,.2)":"rgba(45,20,16,.24)";ctx.lineWidth=.55;ctx.beginPath();ctx.moveTo(a.x+px*side*4.5,a.y+py*side*4.5);ctx.quadraticCurveTo((a.x+b.x)/2+px*side*5.4,(a.y+b.y)/2+py*side*5.4,b.x+px*side*4.2,b.y+py*side*4.2);ctx.stroke()});ctx.restore();
 }
 
-function stitchHole(ctx:CanvasRenderingContext2D,point:Pt){ctx.save();const rim=ctx.createRadialGradient(point.x-1.4,point.y-1.6,.4,point.x,point.y,5.2);rim.addColorStop(0,"rgba(10,12,11,.94)");rim.addColorStop(.34,"rgba(25,27,24,.78)");rim.addColorStop(.57,"rgba(74,68,58,.34)");rim.addColorStop(.76,"rgba(255,255,255,.34)");rim.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=rim;ctx.beginPath();ctx.ellipse(point.x,point.y,5.3,4.5,-.25,0,Math.PI*2);ctx.fill();ctx.fillStyle="rgba(8,10,9,.78)";ctx.beginPath();ctx.ellipse(point.x+.25,point.y+.4,2.25,1.85,-.25,0,Math.PI*2);ctx.fill();ctx.restore()}
+function stitchHole(ctx:CanvasRenderingContext2D,point:Pt){ctx.save();ctx.shadowColor="rgba(15,10,8,.48)";ctx.shadowBlur=5;ctx.shadowOffsetX=2.1;ctx.shadowOffsetY=3.1;ctx.fillStyle="rgba(28,23,20,.34)";ctx.beginPath();ctx.ellipse(point.x+1.2,point.y+1.7,5.8,4.7,-.25,0,Math.PI*2);ctx.fill();ctx.shadowColor="transparent";const rim=ctx.createRadialGradient(point.x-1.6,point.y-1.8,.35,point.x,point.y,5.8);rim.addColorStop(0,"rgba(5,7,6,.98)");rim.addColorStop(.3,"rgba(18,20,18,.9)");rim.addColorStop(.52,"rgba(64,57,49,.48)");rim.addColorStop(.72,"rgba(255,255,255,.48)");rim.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=rim;ctx.beginPath();ctx.ellipse(point.x,point.y,5.8,4.8,-.25,0,Math.PI*2);ctx.fill();ctx.fillStyle="rgba(5,7,6,.9)";ctx.beginPath();ctx.ellipse(point.x+.35,point.y+.45,2.5,2,-.25,0,Math.PI*2);ctx.fill();ctx.strokeStyle="rgba(255,255,255,.5)";ctx.lineWidth=.8;ctx.beginPath();ctx.arc(point.x-1,point.y-1,3.4,Math.PI*.82,Math.PI*1.55);ctx.stroke();ctx.restore()}
 function rangeStyle(value:number,min:number,max:number){return{"--range-progress":`${Math.max(0,Math.min(100,(value-min)/(max-min)*100))}%`} as CSSProperties}
 function makeMonochromeSource(img:HTMLImageElement){const sourceWidth=img.naturalWidth||img.width,sourceHeight=img.naturalHeight||img.height,scale=Math.min(1,1600/Math.max(sourceWidth,sourceHeight)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(sourceWidth*scale));canvas.height=Math.max(1,Math.round(sourceHeight*scale));const ctx=canvas.getContext("2d",{willReadFrequently:true})!;ctx.drawImage(img,0,0,canvas.width,canvas.height);const image=ctx.getImageData(0,0,canvas.width,canvas.height),pixels=image.data;for(let i=0;i<pixels.length;i+=4){const gray=Math.max(0,Math.min(255,(pixels[i]*.299+pixels[i+1]*.587+pixels[i+2]*.114-128)*.96+128));pixels[i]=gray;pixels[i+1]=gray;pixels[i+2]=gray}ctx.putImageData(image,0,0);return canvas}
 
@@ -54,7 +58,7 @@ export function StitchieEditor() {
   const [textValue,setTextValue]=useState("LOVE"), [motif,setMotif]=useState("爱心"), [motifSize,setMotifSize]=useState(72), [textSize,setTextSize]=useState(58);
   const [stitchSize,setStitchSize]=useState(18);
   const [stitches,setStitches]=useState<Stitch[]>([]), [drawing,setDrawing]=useState(false), [last,setLast]=useState<Pt|null>(null);
-  const [playing,setPlaying]=useState(false), [progress,setProgress]=useState(1), [duration,setDuration]=useState(6), [fps,setFps]=useState(12);
+  const [playing,setPlaying]=useState(false), [progress,setProgress]=useState(1), [duration]=useState(6), [fps]=useState(12), [exportingGif,setExportingGif]=useState(false);
   const color=THREAD_COLORS[colorIndex], baseDims=RATIOS[ratio], dims=orientation==="landscape"&&baseDims.w!==baseDims.h?{...baseDims,w:baseDims.h,h:baseDims.w}:baseDims;
   const selectedPhoto=photos.find(photo=>photo.id===selectedPhotoId)??null;
   const originalCanvasPhoto=photos.find(photo=>photo.id===basePhotoIdRef.current)??photos[0]??null,originalWidth=originalCanvasPhoto?.img.naturalWidth||originalCanvasPhoto?.img.width||dims.w,originalHeight=originalCanvasPhoto?.img.naturalHeight||originalCanvasPhoto?.img.height||dims.h;
@@ -95,10 +99,11 @@ export function StitchieEditor() {
   const startPlayback=(from=progress)=>{if(!stitches.length){alert("请先绘制、输入文字或放置图案，再播放穿针动画。");return false}const start=from>=.999?0:from;cancelAnimationFrame(animRef.current);playStartRef.current=performance.now()-start*duration*1000;setProgress(start);setPlaying(true);return true};
   const togglePlayback=()=>{if(playing){cancelAnimationFrame(animRef.current);setPlaying(false)}else startPlayback()};
   const savePng=()=>{draw(1,false);const a=document.createElement("a");a.download="stitchie-memory.png";a.href=canvasRef.current!.toDataURL("image/png");a.click();requestAnimationFrame(()=>draw(1,true))};
-  const exportAnimation=()=>{if(!startPlayback(0))return;setMode("photo");alert("动态预览已开始。当前浏览器将动画录制为 WebM（画质优于 GIF）；完成后会自动保存。");const c=canvasRef.current!,stream=c.captureStream(fps),rec=new MediaRecorder(stream,{mimeType:"video/webm"}),parts:BlobPart[]=[];rec.ondataavailable=e=>parts.push(e.data);rec.onstop=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(parts,{type:"video/webm"}));a.download="stitchie-process.webm";a.click()};rec.start();setTimeout(()=>rec.stop(),duration*1000+250)};
+  const exportGif=async()=>{if(!stitches.length){alert("请先添加十字针，再导出 GIF 动图。");return}setPlaying(false);setExportingGif(true);try{const source=canvasRef.current!,scale=Math.min(1,640/Math.max(source.width,source.height)),width=Math.max(1,Math.round(source.width*scale)),height=Math.max(1,Math.round(source.height*scale)),frameCanvas=document.createElement("canvas");frameCanvas.width=width;frameCanvas.height=height;const frameCtx=frameCanvas.getContext("2d",{willReadFrequently:true})!,gif=GIFEncoder(),frameCount=Math.min(72,Math.max(24,duration*fps)),delay=Math.round(1000/fps);for(let i=0;i<frameCount;i++){const frameProgress=i/(frameCount-1);draw(frameProgress,false);frameCtx.clearRect(0,0,width,height);frameCtx.drawImage(source,0,0,width,height);const frame=frameCtx.getImageData(0,0,width,height),palette=quantize(frame.data,192),index=applyPalette(frame.data,palette);gif.writeFrame(index,width,height,{palette,delay,repeat:0});if(i%4===0){setProgress(frameProgress);await new Promise(resolve=>setTimeout(resolve,0))}}gif.finish();const blob=new Blob([gif.bytes()],{type:"image/gif"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="stitchie-process.gif";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}catch(error){console.error(error);alert("GIF 导出失败，请减少画布内容后重试。")}finally{setExportingGif(false);setProgress(1);requestAnimationFrame(()=>draw(1,true))}};
+  const exportAnimation=()=>{if(!startPlayback(0))return;setMode("photo");const c=canvasRef.current!,mime=MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":"video/webm",stream=c.captureStream(fps),rec=new MediaRecorder(stream,{mimeType:mime}),parts:BlobPart[]=[];rec.ondataavailable=e=>parts.push(e.data);rec.onstop=()=>{const blob=new Blob(parts,{type:"video/webm"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="stitchie-process.webm";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};rec.start();setTimeout(()=>rec.stop(),duration*1000+250)};
 
   return <main className="studio-shell"><input ref={fileRef} hidden multiple type="file" accept="image/*" onChange={e=>{load(e.target.files);e.currentTarget.value=""}}/>
-    <header className="topbar"><div className="brand"><span className="brand-flower">✿</span><strong>stitchie studio</strong><i>turn your memories<br/>into stitches</i></div><div className="file-actions"><button onClick={()=>{basePhotoIdRef.current=null;setPhotos([]);setSelectedPhotoId(null);setStitches([])}}>▱ 新建</button><button onClick={()=>fileRef.current?.click()}>▱ 打开</button><button onClick={undo} disabled={!stitches.length}>↶ 撤销</button><button className="header-export" onClick={savePng}>⇩ 导出 PNG</button><button className="header-export" onClick={exportAnimation}>▷ 导出动画</button></div></header>
+    <header className="topbar"><div className="brand"><span className="brand-flower">✿</span><strong>stitchie studio</strong><i>turn your memories<br/>into stitches</i></div><div className="file-actions"><button onClick={()=>{basePhotoIdRef.current=null;setPhotos([]);setSelectedPhotoId(null);setStitches([])}}>▱ 新建</button><button onClick={()=>fileRef.current?.click()}>▱ 打开</button><button onClick={undo} disabled={!stitches.length}>↶ 撤销</button><button className="header-export" onClick={savePng}>⇩ PNG</button><button className="header-export" disabled={exportingGif} onClick={exportGif}>{exportingGif?"生成中…":"▦ GIF"}</button><button className="header-export" onClick={exportAnimation}>▷ 视频</button></div></header>
     <section className="workspace">
       <aside className="left-col">
         <section className="panel photo-panel"><div className="tabs">{[["▧","photo","照片"],["✎","draw","绘制"],["T","text","文字"],["♡","pattern","图案"]].map(x=><button key={x[1]} className={mode===x[1]?"active":""} onClick={()=>setMode(x[1])}><b>{x[0]}</b>{x[2]}</button>)}</div>
