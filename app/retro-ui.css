@@ -42,9 +42,7 @@ body:before{
   -webkit-backdrop-filter:blur(22px) saturate(125%);
   backdrop-filter:blur(22px) saturate(125%);
 }
-.brand{gap:13px}.brand-flower{position:relative;flex:0 0 42px;width:42px;height:36px;display:block;font-size:0;border-radius:48% 52% 46% 54%;background:repeating-radial-gradient(ellipse at 48% 48%,transparent 0 3px,rgba(255,225,232,.78) 3.5px 4.5px,transparent 5px 7px),repeating-linear-gradient(18deg,transparent 0 4px,rgba(137,57,83,.2) 4.5px 5.5px,transparent 6px 9px),linear-gradient(145deg,#f7b7ca 0%,#db789b 52%,#b95378 100%);border:1px solid rgba(151,68,96,.42);box-shadow:inset 3px 3px 6px rgba(255,244,247,.76),inset -4px -4px 7px rgba(132,42,72,.2),0 4px 10px rgba(126,67,85,.2);transform:rotate(-5deg)}
-.brand-flower:before{content:"";position:absolute;left:7px;right:6px;top:8px;height:2px;border-radius:50%;border-top:2px solid rgba(255,235,240,.72);border-bottom:1px solid rgba(112,39,66,.2);transform:rotate(17deg);box-shadow:0 7px 0 rgba(255,221,231,.58),0 14px 0 rgba(125,42,70,.15)}
-.brand-flower:after{content:"";position:absolute;width:24px;height:18px;left:31px;top:26px;border:2px solid #c66486;border-top-color:transparent;border-left-color:transparent;border-radius:0 0 18px 0;transform:rotate(16deg);filter:drop-shadow(0 2px 1px rgba(111,46,67,.14))}
+.brand{gap:13px}.brand-flower{position:relative;flex:0 0 46px;width:46px;height:46px;display:block;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(124,83,96,.16))}
 .brand strong{font:600 24px/1.1 "SF Pro Display",-apple-system,sans-serif;letter-spacing:-.5px;border:0;padding:0;color:#2e3e47}
 
 .file-actions,.panel{
