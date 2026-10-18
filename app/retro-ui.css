@@ -107,6 +107,6 @@ input[type=range]::-webkit-slider-thumb{width:18px;height:18px;background:linear
   .brand{width:100%;padding:2px 3px}.brand strong{font-size:20px}
   .file-actions{width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:visible}
   .file-actions button{min-width:0;padding:8px 2px!important;font-size:10px!important;text-align:center}
-  .panel{border-radius:13px}.tabs button{height:60px}
+  .panel{border-radius:13px}.tabs{gap:4px;padding:3px;margin-left:-5px;margin-right:-5px;overflow:hidden}.tabs button{min-width:0;height:56px;padding:5px 2px;gap:3px;overflow:hidden;white-space:nowrap;font-size:12px;line-height:1.1}.tabs button b{font-size:19px;line-height:1}.tabs button.active{border-radius:8px;box-shadow:inset 0 1px #fff,0 2px 6px rgba(75,109,118,.14)}
   .canvas-wrap{border-radius:9px;box-shadow:0 14px 30px rgba(42,64,71,.2),0 0 0 3px rgba(255,255,255,.4)}
 }
