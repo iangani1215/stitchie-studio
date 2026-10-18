@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./controls.css";
+import "./retro-ui.css";
 
 export const metadata: Metadata = {
   title: "stitchie studio",

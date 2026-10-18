@@ -1,0 +1,113 @@
+:root{
+  --ink:#26343d;
+  --line:rgba(90,120,132,.32);
+  --panel:rgba(241,247,248,.78);
+  --blue:#77aebd;
+  --shadow:0 22px 55px rgba(54,82,94,.16),inset 0 1px rgba(255,255,255,.92);
+}
+
+html{background:#dce9ec}
+body{
+  min-width:320px;
+  background:
+    radial-gradient(circle at 14% 6%,rgba(255,255,255,.94),transparent 31%),
+    radial-gradient(circle at 88% 12%,rgba(177,211,221,.7),transparent 34%),
+    linear-gradient(145deg,#d8e5e8 0%,#eef3f2 43%,#c7dce2 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.34;
+  background-image:linear-gradient(rgba(255,255,255,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(73,113,125,.06) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:linear-gradient(to bottom,black,transparent 70%);
+}
+
+.studio-shell{position:relative;max-width:1760px;margin:0 auto;padding:14px 16px 22px}
+.topbar{
+  position:relative;
+  min-height:64px;
+  height:auto;
+  padding:8px 10px 8px 18px;
+  border:1px solid rgba(104,135,146,.38);
+  border-radius:19px;
+  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(224,236,239,.74));
+  box-shadow:0 18px 35px rgba(69,99,109,.15),inset 0 1px #fff,inset 0 -1px rgba(96,130,140,.16);
+  -webkit-backdrop-filter:blur(22px) saturate(125%);
+  backdrop-filter:blur(22px) saturate(125%);
+}
+.brand{gap:13px}.brand-flower{font-size:0;width:54px;display:block;letter-spacing:4px;color:#789ba5;text-shadow:none}
+.brand-flower:before{content:"● ● ●";font-size:13px;color:#ff7c73;letter-spacing:2px;text-shadow:17px 0 #f1c75b,34px 0 #63c889}
+.brand strong{font:600 24px/1.1 "SF Pro Display",-apple-system,sans-serif;letter-spacing:-.5px;border:0;padding:0;color:#2e3e47}
+
+.file-actions,.panel{
+  border:1px solid rgba(105,133,143,.34);
+  background:linear-gradient(145deg,rgba(250,252,251,.88),rgba(226,236,238,.72));
+  box-shadow:0 16px 34px rgba(61,87,96,.13),inset 0 1px rgba(255,255,255,.95);
+  -webkit-backdrop-filter:blur(20px) saturate(120%);
+  backdrop-filter:blur(20px) saturate(120%);
+}
+.file-actions{padding:5px;border-radius:13px;background:rgba(235,243,244,.72)}
+.file-actions button{
+  border:1px solid transparent;
+  border-radius:9px;
+  padding:10px 15px;
+  color:#344750;
+  font-weight:540;
+  transition:.18s ease;
+}
+.file-actions button:hover{border-color:rgba(98,136,148,.36);background:rgba(255,255,255,.62);box-shadow:inset 0 1px #fff,0 3px 8px rgba(71,99,109,.1)}
+.file-actions .header-export{background:linear-gradient(180deg,#d8edf1,#bed9df)!important;border:1px solid #84aebb!important;box-shadow:inset 0 1px rgba(255,255,255,.9),0 3px 9px rgba(71,107,116,.15)}
+
+.workspace{gap:16px;margin-top:14px}.panel{border-radius:16px;padding:18px}
+.photo-panel{padding:9px 16px 16px}
+.tabs{gap:5px;margin:0 0 17px;padding:4px;border-radius:13px;background:rgba(173,198,204,.18);border:1px solid rgba(119,150,158,.16)}
+.tabs button{height:70px;border:0!important;border-radius:10px;color:#40545d;transition:.18s ease}
+.tabs button b{font-size:22px}.tabs button.active,.ratios button.active,.export-types button.active{
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(197,224,230,.84));
+  border:1px solid #79a8b5!important;
+  border-radius:10px;
+  box-shadow:inset 0 1px #fff,0 5px 12px rgba(75,109,118,.18);
+}
+
+button,input,select{font:inherit}button{transition:transform .12s ease,filter .15s ease,box-shadow .15s ease}button:active:not(:disabled){transform:translateY(1px);filter:saturate(.9)}
+.upload,.thumb,.text-entry,.font-label select{border-color:rgba(105,135,144,.34);background:rgba(255,255,255,.48);border-radius:11px}
+.upload{border-style:dashed}.filter-toggle button,.mini-actions button,.wide,.edit-actions button,.orientation-toggle button,.no-canvas,.motif-grid button{
+  border-color:rgba(108,137,145,.3);
+  background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(218,230,231,.74));
+  box-shadow:inset 0 1px rgba(255,255,255,.95),0 3px 7px rgba(76,102,109,.08);
+}
+.filter-toggle button.active,.orientation-toggle button.active,.no-canvas.active,.motif-grid button.active{background:linear-gradient(180deg,#dff1f4,#c4dfe5);border-color:#7aa8b3}
+.thread-palette{background:rgba(199,215,217,.32);border-color:rgba(102,132,141,.24);box-shadow:inset 0 1px rgba(255,255,255,.8)}
+.thread-palette button{border-color:rgba(66,83,87,.4);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35),0 3px 6px rgba(39,57,62,.18)}
+.thread-palette button.active{outline-color:#5d95a5;box-shadow:0 0 0 4px rgba(149,202,214,.22),inset 0 0 0 2px rgba(255,255,255,.42)}
+
+input[type=range]{height:4px;background:linear-gradient(90deg,#70aab8 0 var(--range-progress,0%),rgba(116,143,150,.22) var(--range-progress,0%) 100%)}
+input[type=range]::-webkit-slider-thumb{width:18px;height:18px;background:linear-gradient(145deg,#f9ffff,#9fc3cb);border:1px solid #709ba6;box-shadow:inset 0 1px #fff,0 3px 7px rgba(54,87,96,.23)}
+
+.canvas-wrap{
+  border:1px solid rgba(70,100,109,.48);
+  border-radius:13px;
+  background:#dbe4e5;
+  box-shadow:0 28px 55px rgba(42,64,71,.2),0 0 0 6px rgba(255,255,255,.38),inset 0 1px #fff;
+}
+.timeline{border-radius:15px;background:linear-gradient(180deg,rgba(248,251,250,.86),rgba(211,225,228,.78))}
+.play{border-color:#6f9ca8;background:linear-gradient(145deg,#f7ffff,#b8d7de);box-shadow:inset 0 1px #fff,0 5px 13px rgba(64,98,107,.18);color:#527f8a}
+.frames span{background:linear-gradient(145deg,rgba(255,255,255,.7),rgba(184,207,211,.68));border:1px solid rgba(106,137,145,.19)}
+
+@media(max-width:800px){
+  body{background:linear-gradient(155deg,#d8e7ea,#f0f3f1 52%,#c7dde2)}
+  .studio-shell{padding:8px}
+  .topbar{border-radius:14px;padding:9px;flex-wrap:wrap}
+  .brand{width:100%;padding:2px 3px}.brand strong{font-size:20px}
+  .file-actions{width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:visible}
+  .file-actions button{min-width:0;padding:8px 2px!important;font-size:10px!important;text-align:center}
+  .panel{border-radius:13px}.tabs button{height:60px}
+  .canvas-wrap{border-radius:9px;box-shadow:0 14px 30px rgba(42,64,71,.2),0 0 0 3px rgba(255,255,255,.4)}
+}
